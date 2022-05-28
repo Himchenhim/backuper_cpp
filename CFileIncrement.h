@@ -1,8 +1,0 @@
-//
-// Created by himchenhim on 27.5.22.
-//
-
-#ifndef BACKUPER_CPP_CFILEINCREMENT_H
-#define BACKUPER_CPP_CFILEINCREMENT_H
-
-#endif //BACKUPER_CPP_CFILEINCREMENT_H

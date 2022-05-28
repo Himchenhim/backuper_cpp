@@ -1,13 +1,11 @@
-#include "CDataUnit.h"
-#include "CBackup.h"
-#include "CDirectory.h"
-#include "CFile.h"
-#include "CLink.h"
-#include "CProgrammHistory.h"
+#include "CDataUnit.hpp"
+#include "CDirectory.hpp"
+#include "CFile.hpp"
+#include "CLink.hpp"
+#include "CBackup.hpp"
 
 using std::cout;
 using std::cin;
-using std::string;
 using std::endl;
 
 
