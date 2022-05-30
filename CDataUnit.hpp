@@ -12,6 +12,9 @@ using std::unique_ptr;
 using std::ostream;
 using std::set;
 
+#define NAME_OF_PROGRAMME "bin"
+
+
 class CDataUnit{
 
 public:

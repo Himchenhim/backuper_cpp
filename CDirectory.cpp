@@ -4,6 +4,8 @@
 
 using std::make_shared;
 
+
+
 CDirectory::CDirectory(string name, bool first_directory) {
     name_of_data_unit = move(name);
     // тут мы будем проходиться по нашей директории и дополнять в неё элементы
@@ -14,10 +16,13 @@ CDirectory::CDirectory(string name, bool first_directory) {
     {
         if ( data_unit->IsFile())
             data_in_file += "file ";
+        else
+            data_in_file += "tree ";
         data_in_file += (data_unit->GetHash() + " ");
         data_in_file += (data_unit->GetName() + "\n");
     }
     hash_of_data_unit = (CalcSha256ForString(data_in_file)).value();
+    std::cout << data_in_file;
 
     // и запишем в файл (отдельная приватная функция)
     SaveTree(first_directory);
@@ -29,15 +34,20 @@ void CDirectory::AddDataUnits() {
     for (const auto & entry : fs::directory_iterator(name_of_data_unit))
     {
         auto filename = entry.path().filename();
+        if ( filename.string() == ".backups" || filename.string() == NAME_OF_PROGRAMME)
+            continue;
+        std::cout << filename.string() << std::endl;
 
         // если это директория, то запускаем ещё один такой конструктор для директории
         if (fs::is_directory(entry.status()))
         {
-            AddDataUnit(make_shared<CDirectory>(fs::current_path()/=filename, false));
+            std::cout <<  ( (fs::current_path()/=name_of_data_unit)/=filename) << std::endl;
+            AddDataUnit(make_shared<CDirectory>(( (fs::current_path()/=name_of_data_unit)/=filename), false));
             // обработка директории
         }else if (fs::is_regular_file(entry.status())){
             // обработка файла
-            AddDataUnit(make_shared<CFile>(filename.c_str()));
+            std::cout <<  (fs::current_path()/=filename) << std::endl;
+            AddDataUnit(make_shared<CFile>(fs::current_path()/=filename));
         }
     }
 }
@@ -55,13 +65,13 @@ bool CDirectory::SaveTree(bool first_directory) const {
     std::cout << file << std::endl;
 
     string pathToRootDirectory;
-    if (first_directory) {
+    if (first_directory)
         // создание директории
         pathToRootDirectory = ( (fs::current_path() /= ".backups/ref_to_backups")  /= directory);
-    }
-    else {
+
+    else
          pathToRootDirectory = ( (fs::current_path() /= ".backups/obj")  /= directory);
-    }
+
     if ( !fs::exists(pathToRootDirectory))
         fs::create_directory(pathToRootDirectory);
 

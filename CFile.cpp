@@ -39,6 +39,6 @@ CFile::CFile(string name_of_file) {
 }
 
 
-bool CFile::IsFile() const { return false;}
-bool CFile::IsDirectory() const {return true;}
+bool CFile::IsFile() const { return true;}
+bool CFile::IsDirectory() const {return false;}
 bool CFile::IsLink() const {return false;}

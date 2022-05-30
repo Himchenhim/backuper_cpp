@@ -22,7 +22,7 @@ namespace txt =  text;
 // work with files
 void init_directory() {
     if ( !fs::exists("./.backups") ){
-        fs::create_directory("./.backup");
+        fs::create_directory("./.backups");
     }
     if ( !fs::exists("./.backups/obj")){
         cout << "hera1" << endl;
@@ -68,8 +68,8 @@ void interaction_with_user( set <shared_ptr<CBackup>> & all_backups)
                     CreateBackup(all_backups, name );
                     cout << "Backup is successfully created!" << endl;
                 }
-                catch (...){
-                    cout << "smth bad happened" << endl;
+                catch ( const std::exception & e){
+                    cout << e.what() << endl;
                 }
                 break;
 //            case 1:
