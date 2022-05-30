@@ -1,13 +1,25 @@
 #pragma once
 #include "CDataUnit.hpp"
+#include <filesystem>
+#include <fstream>
 
-// TREE
+namespace fs = std::filesystem;
+
+
 class CDirectory : public CDataUnit{
 private:
     set < shared_ptr<CDataUnit> > data_units;
+    string data_in_file;
+
+    // может быть всё что угодно, что унаследованно от CDataUnit
+    // пользуемся этой функцией ТОЛЬКО при инициализации директории
+    void AddDataUnits();
+    bool AddDataUnit(const shared_ptr<CDataUnit> & src);
+    bool SaveTree(bool first_directory) const;
 public:
-    CDirectory(string name);
+    CDirectory(string name, bool first_directory);
     ~CDirectory();
-    bool AddDataUnitToDirectory(shared_ptr<CDataUnit> src); // может быть всё что угодно, что унаследованно от CDataUnit
-    bool SaveTreeToFile(); // будем так же хранить в /2_цифры_хеша/38_цифр и там будет само наше дерево
+    bool IsFile() const override;
+    bool IsDirectory() const override;
+    bool IsLink() const override;
 };
