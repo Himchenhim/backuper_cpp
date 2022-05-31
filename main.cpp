@@ -18,21 +18,6 @@ using std::invalid_argument;
 namespace fs = std::filesystem;
 namespace txt =  text;
 
-
-// work with files
-void init_directory() {
-    if ( !fs::exists("./.backups") ){
-        fs::create_directory("./.backups");
-    }
-    if ( !fs::exists("./.backups/obj")){
-        cout << "hera1" << endl;
-        fs::create_directory("./.backups/obj");
-    }
-    if ( !fs::exists("./.backups/ref_to_backups")){
-        cout << "hera2" << endl;
-        fs::create_directory("./.backups/ref_to_backups");
-    }
-}
 bool check_valid_input(string & input, int & input_number)
 {
     try {
@@ -61,29 +46,32 @@ void interaction_with_user( set <shared_ptr<CBackup>> & all_backups)
             continue;
 
         switch (input_number) {
-            case 0:
+            case 0: {
                 string name;
                 cin >> name;
                 try {
-                    CreateBackup(all_backups, name );
+                    CreateBackup(all_backups, name);
                     cout << "Backup is successfully created!" << endl;
                 }
-                catch ( const std::exception & e){
+                catch (const std::exception &e) {
                     cout << e.what() << endl;
                 }
                 break;
+            }
 //            case 1:
 //                // TODO как пользователь хочет к этому возвращаться
-////                GetBackToBackup();
+//                GetBackToBackup();
 //                break;
 //            case 2:
 //                break;
 //            case 3:
 //                break;
-//            case 4:
-//                break;
-//            case 5:
-//                return;
+            case 4: {
+                ShowBackups(all_backups);
+                break;
+            }
+            case 5:
+                return;
 //            default:
 //                cout << "Smth unexpected happened" << endl;
 //                break;
@@ -101,6 +89,7 @@ int main() {
     }
     // инициализировать set<CBackup> backups; сразу же, после запуска. Проверять на наличие такого файла
     set <shared_ptr<CBackup>> all_backups;
+    ReadPreviousBackups(all_backups);
 
     interaction_with_user(all_backups);
 

@@ -14,6 +14,7 @@ public:
     // в каждом конструкторе так же нужно вызывать функцию, для подсчёта хеша
     // при конструировании сразу же сохраняем наш объект в папку objects
     CFile (string name_of_file);
+    CFile (string name_of_file, string hash);
     ~CFile(){}
 
     bool IsFile() const override;

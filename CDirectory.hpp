@@ -15,11 +15,12 @@ private:
     // пользуемся этой функцией ТОЛЬКО при инициализации директории
     void AddDataUnits();
     bool AddDataUnit(const shared_ptr<CDataUnit> & src);
-    bool SaveTree(bool first_directory) const;
+    bool SaveTree() const;
 public:
     CDirectory(string name, bool first_directory);
     ~CDirectory();
     bool IsFile() const override;
     bool IsDirectory() const override;
     bool IsLink() const override;
+    friend class CBackup;
 };

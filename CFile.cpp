@@ -42,3 +42,8 @@ CFile::CFile(string name_of_file) {
 bool CFile::IsFile() const { return true;}
 bool CFile::IsDirectory() const {return false;}
 bool CFile::IsLink() const {return false;}
+
+CFile::CFile(string name_of_file, string hash) {
+    this->name_of_data_unit = move(name_of_file);
+    this->hash_of_data_unit = move(hash);
+}

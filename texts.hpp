@@ -12,3 +12,7 @@ namespace text{
                              "4 - show all backups\n"
                              "5 - close programme\n\n";
 }
+
+size_t number_of_repeating(const string & big_string, const string & small_string);
+
+

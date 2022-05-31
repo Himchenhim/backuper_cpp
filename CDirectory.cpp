@@ -1,6 +1,7 @@
 #include "CDirectory.hpp"
 #include "CFile.hpp"
 #include "hashes.hpp"
+#include <chrono>
 
 using std::make_shared;
 
@@ -25,7 +26,10 @@ CDirectory::CDirectory(string name, bool first_directory) {
     std::cout << data_in_file;
 
     // и запишем в файл (отдельная приватная функция)
-    SaveTree(first_directory);
+    if (!first_directory)
+        // сохраняет только деревья, которые не являются корневыми
+        // так как к корневому дереву нам нужно добавить дополнительную информацию
+        SaveTree();
 
 }
 CDirectory::~CDirectory() {}
@@ -56,7 +60,7 @@ bool CDirectory::AddDataUnit(const shared_ptr<CDataUnit> & src) {
     data_units.insert(src);
     return true;
 }
-bool CDirectory::SaveTree(bool first_directory) const {
+bool CDirectory::SaveTree() const {
     string directory = hash_of_data_unit.substr(0, 2);
     string file = hash_of_data_unit.substr(2);
 
@@ -65,26 +69,22 @@ bool CDirectory::SaveTree(bool first_directory) const {
     std::cout << file << std::endl;
 
     string pathToRootDirectory;
-    if (first_directory)
-        // создание директории
-        pathToRootDirectory = ( (fs::current_path() /= ".backups/ref_to_backups")  /= directory);
 
-    else
-         pathToRootDirectory = ( (fs::current_path() /= ".backups/obj")  /= directory);
-
+    pathToRootDirectory = ( (fs::current_path() /= ".backups/obj") /= directory );
     if ( !fs::exists(pathToRootDirectory))
         fs::create_directory(pathToRootDirectory);
-
     string filename (pathToRootDirectory+ '/' + file);
     std::fstream output_fstream;
     output_fstream.open(filename,std::ios_base::out);
     output_fstream << data_in_file;
+
     return true;
 }
 
 bool CDirectory::IsFile() const { return false;}
 bool CDirectory::IsDirectory() const {return true;}
 bool CDirectory::IsLink() const {return false;}
+
 
 
 
