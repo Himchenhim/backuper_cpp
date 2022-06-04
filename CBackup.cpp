@@ -12,9 +12,9 @@ using std::shared_ptr;
 
 
 CBackup::CBackup(string name) : name_of_backup(move(name)){
-    root_directory = make_shared<CDirectory>(fs::current_path().c_str());
+    root_directory = make_shared<CDirectory>(fs::current_path().c_str(),"");
     hash_of_data = root_directory->hash_of_data_unit;
-    hash_of_backup = CalcSha256ForString(root_directory->data_in_file + name_of_backup + " " + hash_of_backup ).value();
+    hash_of_backup = CalcSha256ForString(root_directory->data_in_file + " " + name_of_backup + " " + hash_of_backup ).value();
     SaveBackup();
 }
 
@@ -46,11 +46,19 @@ CBackup::CBackup(std::fstream & input_stream) {
 
     root_directory = make_shared<CDirectory> (input_stream);
     input_stream >> name_of_backup >> hash_of_backup >> hash_of_data >> time_of_backup;
-
+    cout << name_of_backup << endl;
 }
 
 void CBackup::ReturnBackupToDirectory(const string &path) {
     root_directory->Restore();
+}
+
+// -- new file/directory - если путь данного файла не найдён в старом бэкапе
+// -- modified file - если путь данного файла найден, но хэщ разный
+// -- deleted file - если данный файл был в старом бэкапе, а сейчас его нет
+
+void CompareBackups(const CBackup &old_backup, const CBackup &new_backup) {
+
 }
 
 

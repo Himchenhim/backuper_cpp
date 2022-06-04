@@ -75,7 +75,6 @@ bool check_valid_input(string & input, int & input_number){
 
     return true;
 }
-
 void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
 {
     // initialization of input variables
@@ -140,7 +139,7 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
 
                     ReturnBackup(all_backups,old_backup);
                     text_out += "Backup is successfully restored in your curren folder!\n";
-                    ShowStartMenu(text_out);
+//                    ShowStartMenu(text_out);
                     break;
                 }
                     case 2: {
@@ -192,10 +191,9 @@ int main() {
 
 
 // TODO tasks
-// 1) поменять тип сохраняемых данных с <set<shared_ptr<CBackup>> на что-то другое
-// 2) так же сделать мапу для CDirectoryб где ключ будет ПУТЬ к файлу и к его данным, а данные будут CDataUnit
-// 3) сделать возвращение на CBackup (удалять всё, что было сейчас в директории, и вставлять предыдущий CBackup)
-// 4) сделать так, что бы функция CreateBackup запускалась по заданному времени пользователя
+// 1) сделать функцию, которая показывает отличия между двумя бэкапами
+// 2) сделать так, что бы функция CreateBackup запускалась по заданному времени пользователя
+// *) архивировать / разархивировать данные, которые идут с папки
 
 
 // TODO errors

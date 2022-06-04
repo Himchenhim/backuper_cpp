@@ -31,6 +31,8 @@ public:
     string GetHashBackup()const{return hash_of_backup;}
     time_t GetTime()const{return time_of_backup;}
 
+    friend void CompareBackups(const CBackup & old_backup, const CBackup & new_backup);
+    friend void CompareBackupWithActualState(const CBackup & old_backup, const CBackup & new_backup);
 };
 
 

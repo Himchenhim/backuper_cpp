@@ -16,15 +16,14 @@ private:
     set < shared_ptr<CDataUnit> > data_units;
     string data_in_file;
 
-    // может быть всё что угодно, что унаследованно от CDataUnit
-    // пользуемся этой функцией ТОЛЬКО при инициализации директории
+    // functions for initialization of directory
     void AddDataUnits();
     bool AddDataUnit(const shared_ptr<CDataUnit> & src);
     bool SaveTree() const;
 public:
-    CDirectory(const string & name);
+    CDirectory(const string & path, const string & name);
     CDirectory(fstream & sstream);
-    CDirectory(fstream & sstream, string name);
+    CDirectory(fstream & sstream, string path, string name);
     ~CDirectory();
     void Restore() const override ;
     bool IsFile() const override;

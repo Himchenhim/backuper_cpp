@@ -26,11 +26,14 @@ public:
 
     string GetHash(){return hash_of_data_unit;}
     string GetName(){return name_of_data_unit;}
+    string GetPath(){return path_of_data_unit;}
 
 protected:
     string name_of_data_unit;
+    string path_of_data_unit;
     // для каждого наследуемого типа данных свой метод вычисления хеша
     string hash_of_data_unit;
+
 };
 
 

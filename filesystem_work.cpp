@@ -45,7 +45,6 @@ void ReadPreviousBackups(vector<shared_ptr<CBackup>> & backups){
                 input_stream.open(file_to_open,std::ios_base::in);
 
                 backups.push_back(make_shared<CBackup>(input_stream));
-
             }
 
         }
@@ -67,13 +66,8 @@ void ReturnBackup(vector <shared_ptr<CBackup>> & all_backups, const string & nam
             //string path_to_file =  fs::current_path().string() + "/.backups/" + directory + '/' + file;
             try {
                 // fstream opened_backup(path_to_file);
-                string dir_to_backup = fs::current_path().string() + "/" + x->GetName();
-                if (!fs::exists(dir_to_backup))
-                    fs::create_directory(dir_to_backup);
-                deleteDirectoryContents(dir_to_backup);
-
+                string dir_to_backup = fs::current_path().string();
                 x->ReturnBackupToDirectory(dir_to_backup);
-
             }
             catch (const std::exception & e){
                 cout << e.what() << "\n error in returning backup"<< endl;

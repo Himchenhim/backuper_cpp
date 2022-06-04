@@ -2,11 +2,12 @@
 #include "hashes.hpp"
 
 
-CFile::CFile(string name_of_file) {
+CFile::CFile(string path_of_file,string name_of_file) {
+    path_of_data_unit = move(path_of_file);
     name_of_data_unit = move(name_of_file);
 
     // write to file
-    ifstream ifs(name_of_data_unit, std::ios::in | std::ios::binary);
+    ifstream ifs(path_of_data_unit, std::ios::in | std::ios::binary);
 
     vector <char> data_from_file;
     char x;
@@ -17,7 +18,7 @@ CFile::CFile(string name_of_file) {
     }
 
     // create hash
-    hash_of_data_unit = (CalcSha256ForFile(name_of_data_unit)).value();
+    hash_of_data_unit = (CalcSha256ForFile(path_of_data_unit)).value();
     string directory = hash_of_data_unit.substr(0,2);
     string file = hash_of_data_unit.substr(2);
 
@@ -43,8 +44,9 @@ bool CFile::IsFile() const { return true;}
 bool CFile::IsDirectory() const {return false;}
 bool CFile::IsLink() const {return false;}
 
-CFile::CFile(string name_of_file, string hash) {
-    this->name_of_data_unit = move(name_of_file);
+CFile::CFile(string path, string name,string hash) {
+    this->path_of_data_unit = move(path);
+    this->name_of_data_unit = move(name);
     this->hash_of_data_unit = move(hash);
 }
 
@@ -65,7 +67,7 @@ void CFile::Restore()const {
         data_from_file.push_back(x);
 
     std::fstream output_file;
-    output_file.open(name_of_data_unit,std::ios::binary | std::ios::out);
+    output_file.open(path_of_data_unit,std::ios::binary | std::ios::out);
     for (char i : data_from_file)
         output_file << i;
 

@@ -9,12 +9,13 @@ namespace  fs = std::filesystem;
 
 class CFile : public CDataUnit
 {
+
 public:
 
-    // в каждом конструкторе так же нужно вызывать функцию, для подсчёта хеша
-    // при конструировании сразу же сохраняем наш объект в папку objects
-    CFile (string name_of_file);
-    CFile (string name_of_file, string hash);
+    // for every constructor we need call function, which calculate hash
+    // and we save object of CFile class to folder ./.backups/obj/2_hash_symbols/38_hash_symbols
+    CFile (string path_of_file, string name_of_file);
+    CFile (string path_of_file, string name_of_file, string hash_of_file);
     void Restore() const override ;
 
     ~CFile(){}
