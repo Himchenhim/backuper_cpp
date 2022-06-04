@@ -22,6 +22,7 @@ public:
     virtual bool IsFile() const = 0;
     virtual bool IsDirectory() const = 0;
     virtual bool IsLink() const = 0;
+    virtual void Restore() const = 0;
 
     string GetHash(){return hash_of_data_unit;}
     string GetName(){return name_of_data_unit;}

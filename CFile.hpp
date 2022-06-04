@@ -15,6 +15,8 @@ public:
     // при конструировании сразу же сохраняем наш объект в папку objects
     CFile (string name_of_file);
     CFile (string name_of_file, string hash);
+    void Restore() const override ;
+
     ~CFile(){}
 
     bool IsFile() const override;
