@@ -2,6 +2,7 @@
 #include "CDirectory.hpp"
 #include "texts.hpp"
 #include "hashes.hpp"
+#include "exceptions.h"
 #include <filesystem>
 #include <chrono>
 
@@ -57,8 +58,182 @@ void CBackup::ReturnBackupToDirectory(const string &path) {
 // -- modified file - если путь данного файла найден, но хэщ разный
 // -- deleted file - если данный файл был в старом бэкапе, а сейчас его нет
 
-void CompareBackups(const CBackup &old_backup, const CBackup &new_backup) {
+void CompareBackups(const CBackup &old_backup, const CBackup &new_backup){
 
 }
+
+void ShowChanges(vector<string> & created, vector<string> & modified, set<string> & deleted){
+    cout << "--------------------------------------------" << endl;
+    cout << "New files and directories:" << endl;
+    for (const auto & x : created)
+        cout << x << endl;
+
+    cout << "--------------------------------------------" << endl;
+    cout << "Modified files and directories:" << endl;
+    for (const auto & x : modified)
+        cout << x << endl;
+
+    cout << "--------------------------------------------" << endl;
+    cout << "Deleted files and directories:" << endl;
+    for (const auto & x : deleted)
+        cout << x << endl;
+
+
+}
+
+void CompareDirectoryWithActualState(const shared_ptr<CDirectory> & directory,
+                                     vector<string> &created,
+                                     vector<string> &modified,
+                                     set<string> &deleted,
+                                     string path){ // jack/robert
+    set<string> tmp_deleted = directory->GetAllDataUnits();
+    path += directory->GetName() + "/";
+    for (const auto & entry : fs::directory_iterator(fs::current_path() /= path ))
+    {
+        // for getting hash
+        string path_to_file = entry.path().string();
+        string filename = entry.path().filename().string();
+        string hash_to_file = CalcSha256ForFile(path_to_file).value();
+        cout << "filename: " << path+filename << endl;
+
+        // try to find that name in our root directory
+        if (fs::is_directory(path_to_file)){
+            if ( tmp_deleted.find(filename) == tmp_deleted.end() ) {
+                created.push_back(path + filename+"/");
+            }
+            else
+            {
+                shared_ptr<CDirectory> ptr_on_directory =
+                        std::dynamic_pointer_cast<CDirectory>(directory->FindDataUnitInDirectory(filename));
+                tmp_deleted.erase(filename);
+                CompareDirectoryWithActualState(ptr_on_directory,created,modified,deleted,path);
+            }
+        }
+        else if (fs::is_regular_file(path_to_file)) {
+            try {
+                shared_ptr<CDataUnit> tmp_data_unit = directory->FindDataUnitInDirectory(filename);
+                // compare their hashes
+                // regardless it is directory or file
+                if (hash_to_file == tmp_data_unit->GetHash() )
+                {
+                    tmp_deleted.erase(filename);
+                }else {
+                    tmp_deleted.erase(filename);
+                    modified.push_back(path+filename);
+                }
+            }
+                // if file was not found
+            catch (const FileException &e) {
+                created.push_back(path+filename);
+            }
+        }
+    }
+
+    // konec
+    for (const auto & x : tmp_deleted)
+        deleted.insert(path+x );
+}
+
+void CompareBackupWithActualState(const CBackup & backup) {
+    // проходимся по директории и находим в бэкапе файл сравниваем их
+    // хэши, если это директория, то ныряем в директорию и смотрим, есть ли ткая же директория в
+    // бэкапе, если нет то просто занимаемся выводом файлов и директорий, и возле всех пишем - new
+    vector<string> created;
+    vector<string> modified;
+    set<string> deleted = backup.root_directory->GetAllDataUnits();
+
+    for (const auto & entry : fs::directory_iterator(fs::current_path()))
+    {
+        //skip
+        if (entry.path().filename().string() == ".backups" || entry.path().filename().string() == "bin" )
+            continue;
+
+        // for getting hash
+        auto path = entry.path().string();
+        auto filename = entry.path().filename().string();
+        cout << "filename: " << filename << endl;
+
+        // try to find that name in our root directory
+        if (fs::is_directory(path)){
+            if ( deleted.find(filename) == deleted.end() ) {
+                created.push_back(filename + "/");
+            }
+            else
+            {
+                shared_ptr<CDirectory> ptr_on_directory = std::dynamic_pointer_cast<CDirectory>(backup.root_directory->FindDataUnitInDirectory(filename));
+
+                cout << "^------------------------------" << endl;
+                cout << ptr_on_directory->GetName() << endl;
+                ptr_on_directory -> ShowAllUnits();
+                cout << "^------------------------------" << endl;
+
+                deleted.erase(filename);
+                CompareDirectoryWithActualState(ptr_on_directory,created,modified,deleted,"");
+            }
+        }
+        else if (fs::is_regular_file(path)) {
+            try {
+                shared_ptr<CDataUnit> tmp_data_unit = backup.root_directory->FindDataUnitInDirectory(filename);
+                // compare their hashes
+                // regardless it is directory or file
+                if (CalcSha256ForFile(path) == tmp_data_unit->GetHash() )
+                {
+                    deleted.erase(filename);
+                }else {
+                    deleted.erase(filename);
+                    modified.push_back(filename);
+                }
+            }
+                // if file was not found
+            catch (const FileException &e) {
+                created.push_back(filename);
+            }
+        }
+    }
+    ShowChanges(created,modified,deleted);
+}
+
+CBackup::CBackup(const CBackup & src)= default;
+
+const CBackup & FindBackup(vector <shared_ptr<CBackup>> & all_backups, const string & name_of_backup)
+{
+    for (const auto & x : all_backups)
+    {
+        if (x->GetName() == name_of_backup)
+            return *x;
+    }
+    throw InputException("There are no backup with that name!");
+}
+
+
+
+//set<shared_ptr<CDataUnit>> deleted;
+//set<shared_ptr<CDataUnit>> created;
+//set<shared_ptr<CDataUnit>> modified;
+//set<shared_ptr<CDataUnit>> same;
+//
+//for ( const auto & entry : fs::directory_iterator(directory_to_iterate)){
+//auto filename = entry.path().string();
+//
+//if (fs::is_directory(entry.status())){
+//
+//}else if (fs::is_regular_file(entry.status())){
+//// compare by name
+//string hash = backup.root_directory->FindDataUnit(filename);
+//
+//if (hash.empty())
+//// add file to -created-
+//created.insert(make_shared<CFile>(fs::current_path()/=filename,filename,hash));
+//// compare by hash
+//else if (hash != CalcSha256ForFile(fs::current_path()/=filename))
+//modified.insert(make_shared<CFile>(fs::current_path()/=filename,filename,hash));
+//else
+//same.insert(make_shared<CFile>(fs::current_path()/=filename,filename,hash));
+//
+//}
+//}
+
+
+
 
 

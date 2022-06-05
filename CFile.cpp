@@ -2,9 +2,11 @@
 #include "hashes.hpp"
 
 
+// writing to file
 CFile::CFile(string path_of_file,string name_of_file) {
     path_of_data_unit = move(path_of_file);
     name_of_data_unit = move(name_of_file);
+
 
     // write to file
     ifstream ifs(path_of_data_unit, std::ios::in | std::ios::binary);
@@ -44,6 +46,7 @@ bool CFile::IsFile() const { return true;}
 bool CFile::IsDirectory() const {return false;}
 bool CFile::IsLink() const {return false;}
 
+// reading from file
 CFile::CFile(string path, string name,string hash) {
     this->path_of_data_unit = move(path);
     this->name_of_data_unit = move(name);
