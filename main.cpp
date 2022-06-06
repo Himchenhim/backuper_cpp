@@ -290,30 +290,35 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups,int time_
                             case 0: {
                                 time_mode = 0;
                                 SaveInfoToScheduleMode(time_mode,0);
+                                cout << "Your backup will be never saved" << endl;
                                 break;
                             }
                             case 1: {
                                 time_mode = 1;
                                 scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(86400));
                                 SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(86400));
+                                cout << "Your backup will be saved after 1 day" << endl;
                                 break;
                             }
                             case 2: {
                                 time_mode = 2;
                                 scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(604800));
-                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(604800));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(604800));                                cout << "Your backup will be saved after 1 day" << endl;
+                                cout << "Your backup will be saved after 7 days" << endl;
                                 break;
                             }
                             case 3: {
                                 time_mode = 3;
                                 scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(2592000));
                                 SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(2592000));
+                                cout << "Your backup will be saved after 30 days" << endl;
                                 break;
                             }
                             case 4: {
                                 time_mode = 4;
                                 scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(31536000));
                                 SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(31536000));
+                                cout << "Your backup will be saved after 365 days" << endl;
                                 break;
                             }
                         }
