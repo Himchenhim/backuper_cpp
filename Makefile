@@ -6,8 +6,8 @@ COMP=-std=c++17
 SSLFLAGS=-lssl -lcrypto
 DBG=-g3 -fsanitize=address
 
-CFILES=main.cpp CBackup.cpp CDataUnit.cpp CDirectory.cpp CFile.cpp hashes.cpp filesystem_work.cpp texts.cpp exceptions.cpp
-OBJECTS=main.o CBackup.o CDataUnit.o CDirectory.o CFile.o hashes.o filesystem_work.o texts.o exceptions.o
+CFILES=main.cpp CBackup.cpp CDataUnit.cpp CDirectory.cpp CFile.cpp hashes.cpp filesystem_work.cpp texts.cpp exceptions.cpp event_scheduler.cpp
+OBJECTS=main.o CBackup.o CDataUnit.o CDirectory.o CFile.o hashes.o filesystem_work.o texts.o exceptions.o event_scheduler.o
 
 BINARY=bin
 all: $(BINARY)

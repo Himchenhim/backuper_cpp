@@ -7,7 +7,9 @@
 #include <map>
 #include <utility>
 #include <vector>
+#include "event_scheduler.hpp"
 #include <climits>
+
 
 using std::cout;
 using std::endl;
@@ -83,9 +85,26 @@ bool check_valid_input_compare_function(string & input, int & input_number) {
     return true;
 }
 
+bool check_valid_input_time(string & input, int & input_number)
+{
+    try {
+        input_number = std::stoi(input);
+    }catch (const invalid_argument & err) {
+        cout << "Programme does not support working with name of number (e.g 'first', 'one')" << endl;
+        return false;
+    }
+
+    if (input_number < 0 || input_number > 4) {
+        cout << "Invalid command!" << endl;
+        return false;
+    }
+
+    return true;
+}
 
 
-void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
+
+void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups,int time_mode)
 {
     // initialization of input variables
     string input;
@@ -98,6 +117,18 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
     cout << txt::greetings;
     try {
         while (true) {
+
+            if (time_mode != 0)
+                if (scheduler::timer()) {
+                    // delete everything from file
+                    fstream schedule_file;
+                    schedule_file.open(fs::current_path()/=".backups/time_mode",std::ios::out);
+                    schedule_file<<"";
+                    schedule_file.close();
+                    time_mode = 0;
+                }
+
+
             text_out = "";
             if (!(getline(cin, input) && !cin.eof()))
                 throw InputException("There is end of input!");
@@ -239,6 +270,58 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
                         break;
                     }
                     case 4:
+                    {
+
+                        cout << "Please, choose time, how long wait to do backup of current directory:\n"
+                                "do not do backups depends on time - 0\n"
+                                "1 day - 1\n"
+                                "7 days - 2\n"
+                                "30 days - 3\n"
+                                "365 days - 4\n";
+
+                        if (!(getline(cin, input) && !cin.eof()))
+                            throw InputException("There is end of input!");
+
+                        if (!check_valid_input_time(input, input_number))
+                            continue;
+
+                        auto now = std::chrono::system_clock::now();
+                        switch (input_number) {
+                            case 0: {
+                                time_mode = 3;
+                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(10));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(10));
+                                break;
+                            }
+                            case 1: {
+                                time_mode = 1;
+                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(86400));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(86400));
+                                break;
+                            }
+                            case 2: {
+                                time_mode = 2;
+                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(604800));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(604800));
+                                break;
+                            }
+                            case 3: {
+                                time_mode = 3;
+                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(2592000));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(2592000));
+                                break;
+                            }
+                            case 4: {
+                                time_mode = 4;
+                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(31536000));
+                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(31536000));
+                                break;
+                            }
+                        }
+                        break;
+                    }
+
+                    case 5:
                         return;
                 }
 
@@ -253,22 +336,55 @@ int main() {
 
     try{
         init_directory();
+
     }catch (...){
         cout << "Exception occurred" << endl;
+        return 1;
     }
 
     vector<shared_ptr<CBackup>> all_backups;
 
+    // read information about next date if it exists backup from file time_mode
+    int time_mode_to_backup;
+    long  time_to_next_backup;
+    try {
+        if (fs::exists(fs::current_path()/=".backups/time_mode")){
+            fstream time_mode_file;
+            time_mode_file.open(fs::current_path()/=".backups/time_mode",std::ios::in);
+            string mode, sec_from_epoch;
+            time_mode_file >> mode;
+            time_mode_to_backup = stoi(mode);
+            if (time_mode_to_backup != 0) {
+                time_mode_file >> sec_from_epoch;
+                cout << "pis" << endl;
+                time_to_next_backup = stoi(sec_from_epoch);
+                cout << "1pis" << endl;
+                time_t epoch = time_to_next_backup;
+                scheduler::add(CreateBackupOnTime,epoch);
+            }
+        }else
+            time_mode_to_backup = init_time_mode();
+    }
+    catch(const std::invalid_argument & e){
+    }
+    catch(const std::exception & e)
+    {
+        cout << e.what()<< endl;
+        return 1;
+    }
+
     ReadPreviousBackups(all_backups);
 
     try {
-        interaction_with_user(all_backups);
+        interaction_with_user(all_backups,time_mode_to_backup);
     }catch (const std::exception  & e)
     {
         cout << e.what();
+        return 1;
     }
 
 
     return 0;
 }
+
 

@@ -78,7 +78,6 @@ bool CDirectory::SaveTree() const {
 
 bool CDirectory::IsFile() const { return false;}
 bool CDirectory::IsDirectory() const {return true;}
-bool CDirectory::IsLink() const {return false;}
 
 // reading from file
 // for root directory

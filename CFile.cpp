@@ -44,7 +44,6 @@ CFile::CFile(string path_of_file,string name_of_file) {
 
 bool CFile::IsFile() const { return true;}
 bool CFile::IsDirectory() const {return false;}
-bool CFile::IsLink() const {return false;}
 
 // reading from file
 CFile::CFile(string path, string name,string hash) {

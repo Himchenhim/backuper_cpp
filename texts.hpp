@@ -9,14 +9,16 @@ namespace text{
                              "1 - get back to previous backup\n"
                              "2 - compare backups\n"
                              "3 - show all backups\n"
-                             "4 - close programme\n\n";
+                             "4 - set time for auto backup\n"
+                             "5 - close programme\n\n";
     const string reminder = "Reminder!\n"
                             "It is simple programme for creating incremental backups\n"
                             "0 - create backup\n"
                             "1 - get back to previous backup\n"
                             "2 - compare backups\n"
                             "3 - show all backups\n"
-                            "4 - close programme\n\n";
+                            "4 - set time for auto backup\n"
+                            "5 - close programme\n\n";
     const string created_backup = "Backup is successfully created!";
 }
 

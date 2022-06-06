@@ -1,5 +1,6 @@
 #include "filesystem_work.hpp"
 
+
 void init_directory() {
     if ( !fs::exists("./.backups") ){
         fs::create_directory("./.backups");
@@ -13,11 +14,39 @@ void init_directory() {
 }
 
 
+int init_time_mode(){
+    if (!fs::exists(fs::current_path() /=".backups/time_mode"))
+    {
+        fstream time_mode_file;
+        time_mode_file.open(fs::current_path() /=".backups/time_mode", std::ios::out);
+        time_mode_file << 0;
+        time_mode_file.close();
+        return 0;
+    }
+    fstream time_mode_file;
+    time_mode_file.open(fs::current_path() /=".backups/time_mode", std::ios::in);
+    string number;
+    time_mode_file >> number;
+
+    return stoi(number);
+}
+
+void SaveInfoToScheduleMode(int mode, const std::chrono::time_point<std::chrono::system_clock> &time_after_backup){
+    fstream schedule_file;
+    schedule_file.open(fs::current_path()/=".backups/time_mode", std::ios::out);
+    std::chrono::system_clock::duration dtn = time_after_backup.time_since_epoch();
+    schedule_file << mode << "\n"
+            <<  (dtn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den );
+    schedule_file.close();
+}
+
+
 void deleteDirectoryContents(const string& dir_path)
 {
     for (const auto& entry : fs::directory_iterator(dir_path))
         fs::remove_all(entry.path());
 }
+
 
 
 void ReadPreviousBackups(vector<shared_ptr<CBackup>> & backups){
@@ -51,6 +80,20 @@ void ReadPreviousBackups(vector<shared_ptr<CBackup>> & backups){
 void CreateBackup (vector<shared_ptr<CBackup>> & all_backups, string name){
     // iterator on our new backup
     all_backups.push_back(make_shared<CBackup>( move(name) ));
+}
+
+void CreateBackupOnTime(){
+    cout << "Saving backup on time!\n"
+            "To load your backup, you should reload programme" << endl;
+
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    string y = std::to_string(1900+ltm->tm_year);
+    string m = std::to_string(1+ltm->tm_mon);
+    string d = std::to_string(ltm->tm_mday);
+
+    make_shared<CBackup>(d+"-"+m+"-"+y);
 }
 
 

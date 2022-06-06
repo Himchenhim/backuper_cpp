@@ -40,6 +40,5 @@ public:
 
     bool IsFile() const override;
     bool IsDirectory() const override;
-    bool IsLink() const override;
     friend class CBackup;
 };
