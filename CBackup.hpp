@@ -1,6 +1,7 @@
 #pragma once
 #include "CDataUnit.hpp"
 #include "CDirectory.hpp"
+
 #include "filesystem_work.hpp"
 
 class CBackup{
@@ -25,10 +26,10 @@ public:
     // если бэкапа с заданным именем не существует, то возвращаем false, или кидаем ошибку
     // меняет все файлы в директории на те, которые были подняты с бэкапа
 
-    void ReturnBackupToDirectory(const string & path);
+    void ReturnBackupToDirectory();
 
-    // TODO
-    ostream & ShowFileHierarchy(ostream & os);
+    void ShowBackup();
+
 
     string GetName()const{return name_of_backup;}
     string GetHashData()const{return hash_of_data;}
@@ -38,6 +39,7 @@ public:
 
     friend void CompareBackups(const CBackup & old_backup, const CBackup & new_backup);
     friend void CompareBackupWithActualState(const CBackup & backup);
+    friend void CompareBackups(const CBackup & f_backup, const CBackup & s_backup);
 };
 
 

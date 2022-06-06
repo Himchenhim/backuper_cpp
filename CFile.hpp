@@ -24,4 +24,6 @@ public:
     bool IsDirectory() const override;
     bool IsLink() const override;
 
+    void Print(size_t level) const override;
+
 };

@@ -28,6 +28,8 @@ public:
     string GetName(){return name_of_data_unit;}
     string GetPath(){return path_of_data_unit;}
 
+    virtual void Print(size_t level) const = 0;
+
 protected:
     string name_of_data_unit;
     string path_of_data_unit;

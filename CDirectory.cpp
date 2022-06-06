@@ -83,7 +83,7 @@ bool CDirectory::IsLink() const {return false;}
 // reading from file
 // for root directory
 CDirectory::CDirectory(fstream & sstream) {
-
+    path_of_data_unit = fs::current_path();
     string type_of_data_unit, hash_of_data_unit, name_of_data_unit, path_of_data_unit;
         size_t number_of_records;
         sstream >> number_of_records;
@@ -99,18 +99,20 @@ CDirectory::CDirectory(fstream & sstream) {
             }
             catch (const std::exception & e)
             {
+                std::cout << "Problems with data files!" << std::endl;
                 std::cout << e.what() << std::endl;
             }
 
             if (type_of_data_unit == "file")
-                data_units[name_of_data_unit]=make_shared<CFile>(path_of_data_unit,name_of_data_unit, hash_of_data_unit);
+                data_units.insert({name_of_data_unit,make_shared<CFile>(path_of_data_unit,name_of_data_unit, hash_of_data_unit)});
             else {
                 fstream new_stream;
-                string tree_file = fs::current_path().string() + OBJ_DIR
+                string tree_file = fs::current_path().string() + OBJ_DIR + "/"
                                    + hash_of_data_unit.substr(0,2) + "/" + hash_of_data_unit.substr(2);
+                new_stream.open(tree_file, std::ios::in);
 
-                new_stream.open(path_of_data_unit, std::ios::in);
-                data_units[name_of_data_unit]=make_shared<CDirectory>(new_stream, path_of_data_unit, name_of_data_unit);
+                data_units.insert({name_of_data_unit,make_shared<CDirectory>(new_stream, path_of_data_unit, name_of_data_unit)});
+
                 new_stream.close();
             }
         }
@@ -119,8 +121,8 @@ CDirectory::CDirectory(fstream & sstream) {
 // for not root directories
 CDirectory::CDirectory(fstream & sstream, string path, string name) {
 
-    name_of_data_unit = move(name);
     path_of_data_unit = move(path);
+    name_of_data_unit = move(name);
 
     string type_of_data_unit, hash_of_data_unit, name_of_data_unit, path_of_data_unit;
     while (sstream >> type_of_data_unit)
@@ -134,20 +136,20 @@ CDirectory::CDirectory(fstream & sstream, string path, string name) {
         {
             std::cout << e.what() << std::endl;
         }
-
         if (type_of_data_unit == "file")
-            data_units[name_of_data_unit] = make_shared<CFile>(path_of_data_unit,
+            data_units.insert({name_of_data_unit,make_shared<CFile>(path_of_data_unit,
                                                  name_of_data_unit,
-                                                 hash_of_data_unit);
+                                                 hash_of_data_unit)});
         if (type_of_data_unit == "tree") {
             fstream new_stream;
-            string tree_file = fs::current_path().string() + OBJ_DIR
+            string tree_file = fs::current_path().string() + OBJ_DIR + "/"
                                + hash_of_data_unit.substr(0,2) + "/" + hash_of_data_unit.substr(2);
-
             new_stream.open(tree_file, std::ios::in);
-            data_units[name_of_data_unit] = make_shared<CDirectory>(new_stream,
+
+            data_units.insert({name_of_data_unit, make_shared<CDirectory>(new_stream,
                                                       path_of_data_unit,
-                                                      name_of_data_unit);
+                                                      name_of_data_unit)});
+
             new_stream.close();
         }
     }
@@ -158,8 +160,8 @@ CDirectory::CDirectory(fstream & sstream, string path, string name) {
 void CDirectory::Restore() const  {
 
     // creating of folder
-    if ( !name_of_data_unit.empty() &&!fs::exists(name_of_data_unit))
-        fs::create_directory(name_of_data_unit);
+    if ( !name_of_data_unit.empty() && !fs::exists(path_of_data_unit) )
+        fs::create_directory(path_of_data_unit);
     else
         for (const auto& entry : fs::directory_iterator(path_of_data_unit)){
             if (!IsSubstrInStr(entry.path().string(),".backups") &&
@@ -182,7 +184,6 @@ string CDirectory::FindDataUnit(const string &name) const {
 }
 
 shared_ptr<CDataUnit> CDirectory::FindDataUnitInDirectory(const string &name) {
-        ShowAllUnits();
         if ( data_units.count(name) == 0 )
             throw FileException("Not Find!");
         return data_units.find(name)->second;
@@ -191,19 +192,39 @@ shared_ptr<CDataUnit> CDirectory::FindDataUnitInDirectory(const string &name) {
 set<string> CDirectory::GetAllDataUnits() {
     set<string> name_data_units;
     for ( const auto & x : data_units){
-        name_data_units.insert(x.first);
+        if ( x.second->IsFile())
+            name_data_units.insert(x.first);
+        else
+            name_data_units.insert(x.first+"/");
     }
     return name_data_units;
 }
 
+vector<shared_ptr<CDataUnit>> CDirectory::GetAllDataUnitsPtr() {
+    vector<shared_ptr<CDataUnit>> ptr_data_units;
+    for ( const auto & x : data_units)
+        ptr_data_units.push_back(x.second);
+
+    return ptr_data_units;
+}
 
 void CDirectory::ShowAllUnits()
 {
     for (const auto & x : data_units)
-    {
         std::cout << x.first << " -- name " << std::endl;
-    }
 }
 
+void CDirectory::Print(size_t level) const {
+    for (const auto & x : data_units)
+    {
+        if (x.second->IsDirectory())
+        {
+            auto lead = string(level * 3, '-');
+            std::cout << lead << x.first << std::endl;
+            x.second->Print(level+1);
+        }else
+            x.second->Print(level);
+    }
+}
 
 CDirectory::~CDirectory() = default;

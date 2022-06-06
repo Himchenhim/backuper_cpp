@@ -78,3 +78,8 @@ void CFile::Restore()const {
     input_file.close();
     output_file.close();
 }
+
+void CFile::Print(size_t level) const {
+    auto lead = string(level*3,'-');
+    std::cout << lead << name_of_data_unit << std::endl;
+}

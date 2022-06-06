@@ -60,18 +60,15 @@ void CreateBackup (vector<shared_ptr<CBackup>> & all_backups, string name){
 void ReturnBackup(vector <shared_ptr<CBackup>> & all_backups, const string & name) {
     for ( const auto & x : all_backups){
         if (x->GetName() == name){
-            string directory = x->GetHashBackup().substr(0,2);
-            string file = x->GetHashBackup().substr(2);
-
-            //string path_to_file =  fs::current_path().string() + "/.backups/" + directory + '/' + file;
             try {
                 // fstream opened_backup(path_to_file);
                 string dir_to_backup = fs::current_path().string();
-                x->ReturnBackupToDirectory(dir_to_backup);
+                x->ReturnBackupToDirectory();
             }
             catch (const std::exception & e){
                 cout << e.what() << "\n error in returning backup"<< endl;
             }
+
         }
 
     }

@@ -29,7 +29,10 @@ public:
     ~CDirectory();
     void Restore() const override ;
     set<string> GetAllDataUnits();
+    vector<shared_ptr<CDataUnit>> GetAllDataUnitsPtr();
     string FindDataUnit(const string & name) const;
+
+    void Print(size_t level) const;
 
     shared_ptr<CDataUnit> FindDataUnitInDirectory(const string & name);
 
