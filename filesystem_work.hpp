@@ -28,3 +28,4 @@ void CreateBackupOnTime();
 void ReturnBackup (vector< shared_ptr<CBackup> > & all_backups, const string & name);
 void ShowBackups(vector< shared_ptr<CBackup> > &backups);
 void SaveInfoToScheduleMode(int mode, const std::chrono::time_point<std::chrono::system_clock> &time_after_backup);
+void SaveInfoToScheduleMode(int mode, int time);

@@ -39,6 +39,14 @@ void SaveInfoToScheduleMode(int mode, const std::chrono::time_point<std::chrono:
             <<  (dtn.count() * std::chrono::system_clock::period::num / std::chrono::system_clock::period::den );
     schedule_file.close();
 }
+void SaveInfoToScheduleMode(int mode, int time){
+    fstream schedule_file;
+    schedule_file.open(fs::current_path()/=".backups/time_mode", std::ios::out);
+    schedule_file << mode << "\n"
+                  <<  time;
+    schedule_file.close();
+}
+
 
 
 void deleteDirectoryContents(const string& dir_path)

@@ -288,9 +288,8 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups,int time_
                         auto now = std::chrono::system_clock::now();
                         switch (input_number) {
                             case 0: {
-                                time_mode = 3;
-                                scheduler::add(CreateBackupOnTime,now+std::chrono::seconds(10));
-                                SaveInfoToScheduleMode(time_mode,now+std::chrono::seconds(10));
+                                time_mode = 0;
+                                SaveInfoToScheduleMode(time_mode,0);
                                 break;
                             }
                             case 1: {
