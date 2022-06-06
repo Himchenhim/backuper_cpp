@@ -15,10 +15,10 @@ bool IsSubstrInStr(const string & big_str, const string & sub_str){
 CDirectory::CDirectory(const string & path, const string & name = "") {
     path_of_data_unit = path;
     name_of_data_unit = name;
-    // тут мы будем проходиться по нашей директории и дополнять в неё элементы
+    // collect all files/directories from our directory
     AddDataUnits();
 
-    // так же потом после этого посчитаем её хеш (отдельная приватная функция)
+    // calculate hash
     for (const auto & data_unit : data_units)
     {
         if ( data_unit.second->IsFile())
@@ -31,9 +31,9 @@ CDirectory::CDirectory(const string & path, const string & name = "") {
     }
     hash_of_data_unit = (CalcSha256ForString(data_in_file)).value();
     if (!name.empty())
-        // сохраняет только деревья, которые не являются корневыми
-        // так как к корневому дереву нам нужно добавить дополнительную информацию
-        // и по этому он сохраняется отдельно ДОПОЛНИТЕЛЬНО
+
+        // we save only not root tree
+        // because for root tree we need add some extra information
         SaveTree();
 }
 
@@ -45,7 +45,7 @@ void CDirectory::AddDataUnits() {
         if ( filename.string() == ".backups" || filename.string() == NAME_OF_PROGRAMME)
             continue;
 
-        // если это директория, то запускаем ещё один такой конструктор для директории
+        // if it is directory, we will run one more constructor for directory
         if (fs::is_directory(entry.status()))
             AddDataUnit(filename,make_shared<CDirectory>(path_of_data_unit + "/" + filename.string(),filename.string()));
         else if (fs::is_regular_file(entry.status()))
@@ -55,7 +55,7 @@ void CDirectory::AddDataUnits() {
     }
 }
 bool CDirectory::AddDataUnit(string name, const shared_ptr<CDataUnit> & src) {
-    // тут мы будем просто добавлять имя + хеш файла
+    // adding to map shared_ptr
     data_units[move(name)] = src;
     return true;
 }
@@ -90,7 +90,7 @@ CDirectory::CDirectory(fstream & sstream) {
 
         for (size_t i = 0; i < number_of_records; ++i) {
 
-            // о том, что или файл poskozeny или число записей неправильное
+            // if file is invalid
             try {
                 sstream >> type_of_data_unit;
                 sstream >> hash_of_data_unit;

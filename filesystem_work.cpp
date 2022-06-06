@@ -19,10 +19,7 @@ void deleteDirectoryContents(const string& dir_path)
         fs::remove_all(entry.path());
 }
 
-// изначально, мы проходимся по директории всех коммитов, потом мы запускаем для
-// каждой директории свой цикл, для того, что бы собрать информацию о коммитте и
-// создать новый объект CBackup. Сложность состоит в том, как правильно инициализировать
-// директории и сам <set<shared_ptr<CDataUnit>>> внутри самого CDirectory
+
 void ReadPreviousBackups(vector<shared_ptr<CBackup>> & backups){
     fs::path pathToRef = fs::current_path().string() + "/.backups/ref_to_backups/";
 
@@ -61,16 +58,13 @@ void ReturnBackup(vector <shared_ptr<CBackup>> & all_backups, const string & nam
     for ( const auto & x : all_backups){
         if (x->GetName() == name){
             try {
-                // fstream opened_backup(path_to_file);
                 string dir_to_backup = fs::current_path().string();
                 x->ReturnBackupToDirectory();
             }
             catch (const std::exception & e){
                 cout << e.what() << "\n error in returning backup"<< endl;
             }
-
         }
-
     }
 }
 

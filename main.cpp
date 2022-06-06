@@ -251,13 +251,11 @@ void interaction_with_user( vector <shared_ptr<CBackup>> & all_backups)
 
 int main() {
 
-    // init
     try{
         init_directory();
     }catch (...){
         cout << "Exception occurred" << endl;
     }
-    // инициализировать set<CBackup> backups; сразу же, после запуска. Проверять на наличие такого файла
 
     vector<shared_ptr<CBackup>> all_backups;
 
@@ -274,11 +272,3 @@ int main() {
     return 0;
 }
 
-
-// TODO tasks
-// 1) сделать функцию, которая показывает отличия между двумя бэкапами
-// 2) сделать так, что бы функция CreateBackup запускалась по заданному времени пользователя
-// *) архивировать / разархивировать данные, которые идут с папки
-
-
-// TODO errors

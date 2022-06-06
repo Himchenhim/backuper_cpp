@@ -26,7 +26,7 @@ bool CBackup::SaveBackup()  {
     if ( !fs::exists(path_to_dir))
         fs::create_directory(path_to_dir);
 
-    // создать файл и напихать туда контента из data а потом добавить своего
+    // create file and after that add contents as for directory and after that write to backup file some extra info
     string file = hash_of_backup.substr(2);
     string file_location = path_to_dir + '/' + file;
 
@@ -80,7 +80,7 @@ void ShowChanges(vector<string> & created, vector<string> & modified, set<string
         if (backups)
             cout << "Backups the same!" << endl;
         else
-            cout << "Directory is up to date!" << endl;
+            cout << "Directory is the same as backup!" << endl;
     }
 
 }

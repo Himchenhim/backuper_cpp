@@ -3,7 +3,7 @@
 using std::string;
 
 namespace text{
-    const string greetings = "Guten Tag, user!\n"
+    const string greetings = "Hello, user!\n"
                              "It is simple programme for creating incremental backups\n"
                              "0 - create backup\n"
                              "1 - get back to previous backup\n"
